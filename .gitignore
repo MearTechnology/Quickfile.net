@@ -1,0 +1,19 @@
+# .NET Core
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+.vscode/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+
+# Operating System
+Thumbs.db
+ehthumbs.db
+Desktop.ini
