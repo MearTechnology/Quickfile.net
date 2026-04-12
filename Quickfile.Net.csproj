@@ -4,12 +4,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.8.2</Version>
+    <Version>1.8.3</Version>
     <Title>Quickfile.Net</Title>
     <Authors>Mear Technology</Authors>
     <Description>A comprehensive .NET 10 wrapper for the Quickfile API (v1.2) supporting both JSON and XML across all endpoints.</Description>
     <RepositoryUrl>https://github.com/meartechnology/Quickfile.Net</RepositoryUrl>
-    <PackageProjectUrl>https://api.quickfile.co.uk/</PackageProjectUrl>
+    <PackageProjectUrl>https://www.meartechnology.co.uk</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Quickfile;Accounting;API;JSON;XML;.NET10</PackageTags>
     <PackageId>Quickfile.Net</PackageId>
