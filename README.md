@@ -1,14 +1,15 @@
 # Quickfile.Net
 
-A .NET 10 wrapper for the Quickfile API (v1.2) supporting both **JSON** and **XML**.
+A comprehensive .NET 10 wrapper for the Quickfile API (v1.2) supporting both **JSON** and **XML**. This library provides 100% coverage of the Quickfile API endpoints with strongly-typed models and automated authentication.
 
 ## Features
 
 - **.NET 10.0** optimized.
-- **Dual Format Support**: Switch between JSON and XML seamlessly.
+- **Dual Format Support**: Switch between JSON and XML seamlessly via configuration.
+- **Full API Coverage**: Includes Clients, Invoices, Banks, Purchases, Suppliers, Items, Journals, Projects, Ledgers, Payments, Reports, and more.
 - **Dependency Injection** support.
 - **Strongly typed** requests and responses.
-- **Automated Authentication** (MD5 submission number pattern).
+- **Automated Authentication**: Handles MD5 submission number hashing automatically.
 
 ## Installation
 
@@ -44,27 +45,35 @@ The `QuickfileClient` provides the following methods categorized by API section:
 | `DeleteClientAsync` | `Client_Delete` | Delete a client record. |
 | `InsertClientContactsAsync` | `Client_InsertContacts` | Add contacts to an existing client. |
 | `ClientLoginAsync` | `Client_LogIn` | Generate a temporary login URL for a client. |
+| `NewDirectDebitCollectionAsync` | `Client_NewDirectDebitCollection` | Initiate a Direct Debit collection. |
 
-### Invoice Methods
+### Invoice & Estimate Methods
 | Method | Quickfile Endpoint | Description |
 | :--- | :--- | :--- |
-| `CreateInvoiceAsync` | `Invoice_Create` | Create a new sales invoice. |
+| `CreateInvoiceAsync` | `Invoice_Create` | Create a new sales invoice or estimate. |
 | `GetInvoiceAsync` | `Invoice_Get` | Retrieve details for a specific invoice. |
 | `GetInvoicePdfAsync` | `Invoice_GetPDF` | Retrieve a PDF URI for a specific invoice. |
 | `SearchInvoiceAsync` | `Invoice_Search` | Search for invoices based on criteria. |
 | `DeleteInvoiceAsync` | `Invoice_Delete` | Delete a specific invoice. |
 | `SendInvoiceAsync` | `Invoice_Send` | Send an invoice via email. |
+| `AcceptDeclineEstimateAsync` | `Estimate_AcceptDecline` | Accept or decline an estimate. |
+| `ConvertEstimateToInvoiceAsync` | `Estimate_ConvertToInvoice` | Convert an estimate to a live invoice. |
 
 ### Bank Methods
 | Method | Quickfile Endpoint | Description |
 | :--- | :--- | :--- |
 | `SearchBankAsync` | `Bank_Search` | Search for bank transactions. |
+| `GetBankAsync` | `Bank_Get` | Retrieve details for a specific bank account. |
 | `GetBankAccountsAsync` | `Bank_GetAccounts` | List all bank accounts and their balances. |
+| `CreateBankAccountAsync` | `Bank_CreateAccount` | Create a new bank account. |
+| `CreateBankTransactionAsync` | `Bank_CreateTransaction` | Log a new bank transaction. |
+| `GetBankBalancesAsync` | `Bank_GetAccountBalances` | Retrieve balances for multiple accounts. |
 
 ### Purchase Methods
 | Method | Quickfile Endpoint | Description |
 | :--- | :--- | :--- |
 | `CreatePurchaseAsync` | `Purchase_Create` | Log a new purchase/receipt. |
+| `UpdatePurchaseAsync` | `Purchase_Update` | Update an existing purchase record. |
 | `SearchPurchaseAsync` | `Purchase_Search` | Search for purchase records. |
 | `GetPurchaseAsync` | `Purchase_Get` | Retrieve full details for a purchase. |
 | `DeletePurchaseAsync` | `Purchase_Delete` | Delete a purchase record. |
@@ -73,9 +82,60 @@ The `QuickfileClient` provides the following methods categorized by API section:
 | Method | Quickfile Endpoint | Description |
 | :--- | :--- | :--- |
 | `CreateSupplierAsync` | `Supplier_Create` | Create a new supplier record. |
+| `UpdateSupplierAsync` | `Supplier_Update` | Update an existing supplier. |
 | `SearchSupplierAsync` | `Supplier_Search` | Search for suppliers. |
 | `GetSupplierAsync` | `Supplier_Get` | Retrieve full details for a supplier. |
 | `DeleteSupplierAsync` | `Supplier_Delete` | Delete a supplier record. |
+
+### Item & Inventory Methods
+| Method | Quickfile Endpoint | Description |
+| :--- | :--- | :--- |
+| `CreateItemAsync` | `Item_Create` | Create a new inventory item or task. |
+| `GetItemAsync` | `Item_Get` | Retrieve details for an item. |
+| `SearchItemAsync` | `Item_Search` | Search inventory items. |
+| `DeleteItemAsync` | `Item_Delete` | Delete an item. |
+
+### Journal & Ledger Methods
+| Method | Quickfile Endpoint | Description |
+| :--- | :--- | :--- |
+| `CreateJournalAsync` | `Journal_Create` | Create a new manual journal entry. |
+| `GetJournalAsync` | `Journal_Get` | Retrieve journal details. |
+| `SearchJournalAsync` | `Journal_Search` | Search manual journals. |
+| `DeleteJournalAsync` | `Journal_Delete` | Delete a journal entry. |
+| `SearchLedgerAsync` | `Ledger_Search` | Query a nominal ledger. |
+| `GetLedgerAsync` | `Ledger_Get` | Retrieve activity for a nominal code. |
+| `GetNominalLedgersAsync` | `Ledger_GetNominalLedgers` | List nominal ledgers. |
+
+### Payment Methods
+| Method | Quickfile Endpoint | Description |
+| :--- | :--- | :--- |
+| `CreatePaymentAsync` | `Payment_Create` | Log a new payment. |
+| `GetPaymentAsync` | `Payment_Get` | Retrieve payment details. |
+| `SearchPaymentAsync` | `Payment_Search` | Search for payments. |
+| `DeletePaymentAsync` | `Payment_Delete` | Delete a payment record. |
+| `AllocatePaymentAsync` | `Payment_Allocate` | Allocate an unassigned payment. |
+| `GetPaymentMethodsAsync` | `Payment_GetPayMethods` | List available payment methods. |
+
+### Project & Document Methods
+| Method | Quickfile Endpoint | Description |
+| :--- | :--- | :--- |
+| `CreateProjectTagAsync` | `Project_TagCreate` | Attach a project tag. |
+| `SearchProjectTagAsync` | `Project_TagSearch` | Search project tags. |
+| `DeleteProjectTagAsync` | `Project_TagDelete` | Remove a project tag. |
+| `UploadDocumentAsync` | `Document_Upload` | Upload a file to Document Management. |
+
+### Report & System Methods
+| Method | Quickfile Endpoint | Description |
+| :--- | :--- | :--- |
+| `GetAgeingReportAsync` | `Report_Ageing` | Retrieve ageing report (Debtors/Creditors). |
+| `GetBalanceSheetAsync` | `Report_BalanceSheet` | Retrieve Balance Sheet. |
+| `GetProfitAndLossAsync` | `Report_ProfitAndLoss` | Retrieve Profit & Loss report. |
+| `GetChartOfAccountsAsync` | `Report_ChartOfAccounts` | Retrieve Chart of Accounts. |
+| `GetVatObligationsAsync` | `Report_VatObligations` | Retrieve VAT returns. |
+| `GetSubscriptionsAsync` | `Report_Subscriptions` | Retrieve list of subscriptions. |
+| `GetAccountDetailsAsync` | `System_GetAccountDetails` | Retrieve account meta-data. |
+| `SearchSystemEventsAsync` | `System_SearchEvents` | Query the system event log. |
+| `CreateSystemNoteAsync` | `System_CreateNote` | Create a system-wide note. |
 
 ---
 
@@ -114,60 +174,50 @@ The `QuickfileClient` provides the following methods categorized by API section:
 </Client_Search>
 ```
 
-### 2. Bank Get Accounts (`Bank_GetAccounts`)
+---
 
-#### Request (JSON)
-```json
+## Usage Example
+
+```csharp
+public class MyAccountingService
 {
-  "payload": {
-    "Header": { ... },
-    "Body": {}
-  }
-}
-```
+    private readonly QuickfileClient _client;
 
-#### Request (XML)
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<Bank_GetAccounts xmlns="http://www.quickfile.co.uk/schemas/1_2/Bank_GetAccounts">
-  <Header>...</Header>
-  <Body />
-</Bank_GetAccounts>
-```
-
-### 3. Create Purchase (`Purchase_Create`)
-
-#### Request (JSON)
-```json
-{
-  "payload": {
-    "Header": { ... },
-    "Body": {
-      "PurchaseData": {
-        "SupplierID": 98765,
-        "ReceiptDate": "2026-04-12",
-        "Category": "Travel",
-        "Amount": 45.50
-      }
+    public MyAccountingService(QuickfileClient client)
+    {
+        _client = client;
     }
-  }
-}
-```
 
-#### Request (XML)
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<Purchase_Create xmlns="http://www.quickfile.co.uk/schemas/1_2/Purchase_Create">
-  <Header>...</Header>
-  <Body>
-    <PurchaseData>
-      <SupplierID>98765</SupplierID>
-      <ReceiptDate>2026-04-12</ReceiptDate>
-      <Category>Travel</Category>
-      <Amount>45.50</Amount>
-    </PurchaseData>
-  </Body>
-</Purchase_Create>
+    public async Task ProcessInvoices()
+    {
+        // 1. Search for a client
+        var searchResult = await _client.SearchClientAsync(new ClientSearchRequest
+        {
+            SearchParameters = new ClientSearchParameters { CompanyName = "Mear Technology" }
+        });
+
+        // 2. Create an invoice
+        if (searchResult?.Record.Count > 0)
+        {
+            var clientId = searchResult.Record[0].ClientID;
+            var invoice = await _client.CreateInvoiceAsync(new InvoiceCreateRequest
+            {
+                InvoiceData = new InvoiceData
+                {
+                    ClientID = clientId,
+                    IssueDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                    InvoiceLines = new InvoiceLines
+                    {
+                        Item = new List<InvoiceItem>
+                        {
+                            new InvoiceItem { ItemDescription = "Services", UnitCost = 100, Qty = 1 }
+                        }
+                    }
+                }
+            });
+        }
+    }
+}
 ```
 
 ## License
