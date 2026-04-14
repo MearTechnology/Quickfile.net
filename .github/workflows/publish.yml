@@ -2,8 +2,11 @@ name: Publish to NuGet
 
 on:
   push:
+    branches: [ "main" ] # Corre sempre que algo entra na main
     tags:
-      - 'v*' # Trigger on any tag starting with v (e.g., v1.8.2)
+      - 'v*'           # Corre quando cries uma tag (ex: v1.0.0)
+  pull_request:
+    branches: [ "main" ] # Corre para testar contribuições de outros
 
 jobs:
   publish:
@@ -25,7 +28,11 @@ jobs:
       run: dotnet build -c Release --no-restore
 
     - name: Pack (.nupkg)
+      # Só fazemos o Pack se for para publicar (Tags) para poupar tempo
+      if: startsWith(github.ref, 'refs/tags/v')
       run: dotnet pack -c Release --no-build -o .
 
     - name: Publish to NuGet.org
+      # ESTA É A CHAVE: Só envia para o NuGet se for uma TAG
+      if: startsWith(github.ref, 'refs/tags/v')
       run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
