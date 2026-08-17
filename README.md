@@ -1,15 +1,16 @@
 # Quickfile.Net
 
-A comprehensive .NET 10 wrapper for the Quickfile API (v1.2) supporting both **JSON** and **XML**. This library provides 100% coverage of the Quickfile API endpoints with strongly-typed models and automated authentication.
+A comprehensive .NET 10 wrapper for the Quickfile API supporting both the modern **v2 REST API** (with Bearer token authentication) and the legacy **v1.2 API** (supporting JSON and XML across all endpoints), plus Webhook consumption and signature validation.
 
 ## Features
 
 - **.NET 10.0** optimized.
-- **Dual Format Support**: Switch between JSON and XML seamlessly via configuration.
-- **Full API Coverage**: Includes Clients, Invoices, Banks, Purchases, Suppliers, Items, Journals, Projects, Ledgers, Payments, Reports, and more.
-- **Dependency Injection** support.
-- **Strongly typed** requests and responses.
-- **Automated Authentication**: Handles MD5 submission number hashing automatically.
+- **REST API (v2) Support**: Complete coverage of all 45 REST endpoints with Bearer token authentication, pagination, and multi-part document uploads.
+- **Dual Format Legacy (v1.2) Support**: Switch between JSON and XML seamlessly via configuration.
+- **Full API Coverage**: Clients, Invoices, Banks, Purchases, Purchase Orders, Suppliers, Inventory, Journals, Projects, Ledgers, Payments (Client & Supplier), Reports, and Account Management.
+- **Dependency Injection**: First-class support for `Microsoft.Extensions.DependencyInjection`.
+- **Strongly Typed**: Strongly-typed request/response and parameter models.
+- **Webhooks**: Built-in webhook payload parsing and MD5 HMAC validation.
 
 ## Installation
 
@@ -24,14 +25,120 @@ Add to your `Program.cs` or `Startup.cs`:
 ```csharp
 builder.Services.AddQuickfile(options =>
 {
+    // --- Modern REST API (v2) ---
+    options.BearerToken = "YOUR_REST_BEARER_TOKEN";
+    // Optional: defaults to "https://api-beta.quickfile.co.uk"
+    // options.RestBaseUrl = "https://api-beta.quickfile.co.uk";
+
+    // --- Legacy API (v1.2) ---
     options.AccountNumber = "YOUR_ACCOUNT_NUMBER";
     options.ApiKey = "YOUR_API_KEY";
     options.ApplicationId = "YOUR_APPLICATION_ID";
     options.Format = QuickfileFormat.Json; // Optional: Default is Json. Use QuickfileFormat.Xml for XML.
+
+    // --- Webhooks ---
+    options.WebhookSecret = "YOUR_WEBHOOK_SECRET";
 });
 ```
 
-## Available Endpoints
+## REST API (v2) Endpoints
+
+The unified `QuickfileClient` exposes all v2 REST endpoints (prefixed with `Rest...`):
+
+### Account
+- `RestGetAccountMeAsync()`: Get connected account business details and stats.
+
+### Bank
+- `RestGetBankAccountsAsync(parameters)`: List bank accounts with optional nominal/type filters.
+- `RestCreateBankAccountAsync(request)`: Create a new bank account.
+- `RestGetBankBalanceAsync(accountId)`: Get bank balance for an account.
+- `RestGetBankTransactionsAsync(accountId, parameters)`: Query bank transactions with date, nominal, amount filters.
+- `RestCreateBankTransactionsAsync(accountId, request)`: Create untagged bank transactions.
+- `RestGetSupportedBanksAsync()`: List supported bank institutions.
+
+### Clients
+- `RestSearchClientsAsync(parameters)`: Search client records with pagination.
+- `RestCreateClientAsync(request)`: Create a client.
+- `RestGetClientAsync(id, parameters)`: Retrieve full client & contact details.
+- `RestUpdateClientAsync(id, request)`: Update an existing client.
+- `RestDeleteClientAsync(id)`: Delete a client record.
+- `RestGetClientContactsAsync(id)`: Get client contacts.
+- `RestCreateClientContactAsync(id, request)`: Add a client contact.
+- `RestUpdateClientContactAsync(id, contactId, request)`: Update a client contact.
+- `RestDeleteClientContactAsync(id, contactId)`: Delete a client contact.
+- `RestCreateClientLoginUrlAsync(id, request)`: Generate tokenized client login URL.
+- `RestCreateClientDirectDebitAsync(id, request)`: Initiate Direct Debit collection.
+- `RestGetClientTradingStylesAsync()`: Retrieve client trading styles.
+
+### Client & Supplier Payments
+- `RestSearchClientPaymentsAsync(parameters)` / `RestSearchSupplierPaymentsAsync(parameters)`: Search payments with filters & pagination.
+- `RestCreateClientPaymentAsync(request)` / `RestCreateSupplierPaymentAsync(request)`: Create payment records.
+- `RestGetClientPaymentAsync(id)` / `RestGetSupplierPaymentAsync(id)`: Retrieve payment details.
+- `RestDeleteClientPaymentAsync(id)` / `RestDeleteSupplierPaymentAsync(id)`: Delete payment records.
+
+### Documents & Receipt Hub
+- `RestUploadReceiptAsync(stream, fileName, captureDate, purchaseId, receiptName)`: Upload receipt to Receipt Hub.
+- `RestUploadSalesDocumentAsync(stream, fileName, invoiceId, notes)`: Attach document to sales invoice.
+- `RestUploadGeneralDocumentAsync(stream, fileName, collectionName)`: Upload document to Document Management.
+
+### Inventory
+- `RestSearchInventoryAsync(parameters)`: Search inventory items.
+- `RestCreateInventoryItemAsync(request)`: Create inventory item.
+- `RestGetInventoryItemAsync(id)`: Get inventory item.
+- `RestDeleteInventoryItemAsync(id)`: Delete inventory item.
+
+### Invoices & Estimates
+- `RestSearchInvoicesAsync(parameters)`: Search invoices/estimates with filters and pagination.
+- `RestCreateInvoiceAsync(request)`: Create invoice, estimate, or recurring template.
+- `RestGetInvoiceAsync(id)`: Retrieve invoice/estimate details.
+- `RestUpdateInvoiceAsync(id, request)`: Update invoice/estimate.
+- `RestDeleteInvoiceAsync(id, request)`: Delete invoice/estimate.
+- `RestGetInvoicePdfAsync(id)`: Get PDF document URL for invoice.
+- `RestSendInvoiceAsync(request)`: Send invoice/estimate via email.
+
+### Journals & Ledgers
+- `RestSearchJournalsAsync(parameters)`: Search manual journals.
+- `RestCreateJournalAsync(request)`: Create a journal entry.
+- `RestGetJournalAsync(id)`: Retrieve journal by ID.
+- `RestDeleteJournalAsync(id)`: Delete a journal entry.
+- `RestQueryLedgerAsync(parameters)`: Query nominal ledger.
+- `RestGetNominalsAsync(parameters)`: List chart of accounts nominal ledgers.
+
+### Projects
+- `RestSearchProjectsAsync(parameters)`: Search project tags.
+- `RestAttachProjectTagsAsync(request)`: Attach tag to invoice/purchase/estimate.
+- `RestDeleteProjectTagsAsync(request)`: Delete project tag.
+
+### Purchases & Purchase Orders
+- `RestSearchPurchasesAsync(parameters)` / `RestSearchPurchaseOrdersAsync(parameters)`: Search purchases or purchase orders.
+- `RestCreatePurchaseAsync(request)` / `RestCreatePurchaseOrderAsync(request)`: Create purchase / purchase order.
+- `RestGetPurchaseAsync(id)` / `RestGetPurchaseOrderAsync(id)`: Retrieve purchase / purchase order.
+- `RestUpdatePurchaseAsync(id, request)` / `RestUpdatePurchaseOrderAsync(id, request)`: Update purchase / purchase order.
+- `RestDeletePurchaseAsync(id, request)` / `RestDeletePurchaseOrderAsync(id)`: Delete purchase / purchase order.
+
+### Reports
+- `RestGetChartOfAccountsReportAsync(parameters)`: Retrieve Chart of Accounts.
+- `RestGetBalanceSheetReportAsync(dateTo)`: Retrieve Balance Sheet report.
+- `RestGetAgeingReportAsync(parameters)`: Retrieve aged debtors/creditors report.
+- `RestGetProfitAndLossReportAsync(parameters)`: Retrieve Profit & Loss report.
+- `RestGetVatObligationsReportAsync(parameters)`: Retrieve HMRC VAT returns.
+- `RestGetSubscriptionsReportAsync()`: Retrieve account subscriptions.
+- `RestGetEventLogReportAsync(parameters)`: Query system event log.
+
+### Suppliers
+- `RestSearchSuppliersAsync(parameters)`: Search supplier records.
+- `RestCreateSupplierAsync(request)`: Create a supplier.
+- `RestGetSupplierAsync(id)`: Retrieve supplier details.
+- `RestUpdateSupplierAsync(id, request)`: Update supplier.
+- `RestDeleteSupplierAsync(id)`: Delete supplier.
+- `RestGetSupplierContactsAsync(id)`: Retrieve supplier contacts.
+- `RestCreateSupplierContactAsync(id, request)`: Create supplier contact.
+- `RestUpdateSupplierContactAsync(id, contactId, request)`: Update supplier contact.
+- `RestDeleteSupplierContactAsync(id, contactId)`: Delete supplier contact.
+
+---
+
+## Legacy API (v1.2) Endpoints
 
 The `QuickfileClient` provides the following methods categorized by API section:
 

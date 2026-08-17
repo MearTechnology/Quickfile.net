@@ -6,10 +6,10 @@ using Quickfile.Net.Models;
 namespace Quickfile.Net;
 
 /// <summary>
-/// A client for interacting with the Quickfile API (v1.2).
-/// Supports both JSON and XML formats as configured in <see cref="QuickfileOptions"/>.
+/// A client for interacting with the Quickfile API (v1.2 SOAP/JSON and v2 REST).
+/// Supports JSON, XML, and REST endpoints.
 /// </summary>
-public class QuickfileClient
+public partial class QuickfileClient
 {
     private readonly HttpClient _httpClient;
     private readonly QuickfileOptions _options;
